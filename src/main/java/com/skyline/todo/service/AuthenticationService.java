@@ -56,7 +56,8 @@ public class AuthenticationService {
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
-        revokeAllUserTokens(user);
+        // One allow one device to login
+//        revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
@@ -96,7 +97,8 @@ public class AuthenticationService {
                     .orElseThrow();
             if (jwtService.isTokenValid(refreshToken, TokenType.REFRESH, user)) {
                 var accessToken = jwtService.generateToken(user);
-                revokeAllUserTokens(user);
+                // Only allow one device to login
+//                revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
                 return AuthenticationResponse.builder()
                         .accessToken(accessToken)
