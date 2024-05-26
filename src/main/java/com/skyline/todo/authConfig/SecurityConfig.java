@@ -56,13 +56,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-        // Logout from all devices
-//                .logout(
-//                        logout ->
-//                                logout.logoutUrl("/auth/logout")
-//                                        .addLogoutHandler(logoutHandler)
-//                                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-//                )
+                .logout(
+                        logout ->
+                                logout.logoutUrl("/auth/logout")
+                                        .addLogoutHandler(logoutHandler)
+                                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
+                )
         ;
         return http.build();
     }

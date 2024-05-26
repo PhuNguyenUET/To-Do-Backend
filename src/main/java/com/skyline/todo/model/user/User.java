@@ -28,6 +28,8 @@ public class User implements UserDetails {
 
     private String password;
 
+    private boolean isBanned = false;
+
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 

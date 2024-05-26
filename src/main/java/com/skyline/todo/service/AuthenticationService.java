@@ -1,6 +1,5 @@
 package com.skyline.todo.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skyline.todo.authConfig.JwtService;
 import com.skyline.todo.model.auth.*;
 import com.skyline.todo.model.user.Role;
@@ -13,10 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -27,21 +25,18 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public void register(RegisterRequest request) {
+        if(userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalStateException("User already exists");
+        }
         var user = User.builder()
                 .firstName(request.getFirstname())
                 .lastName(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
                 .build();
-        var savedUser = userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
-        saveUserToken(savedUser, jwtToken);
-        return AuthenticationResponse.builder()
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
-                .build();
+        userRepository.save(user);
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -54,22 +49,45 @@ public class AuthenticationService {
 
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow();
+        if(user.isBanned()) {
+            return null;
+        }
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
         // One allow one device to login
 //        revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
+        saveUserToken(user, jwtToken, TokenType.JWT);
+        saveUserToken(user, refreshToken, TokenType.REFRESH);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
-    private void saveUserToken(User user, String jwtToken) {
+    public void logOutOfALlDevices(HttpServletRequest request, HttpServletResponse response) {
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String jwtToken;
+        final String userEmail;
+        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
+            throw new IllegalStateException("No jwt token found");
+        }
+        jwtToken = authHeader.substring(7);
+        userEmail = jwtService.extractUsername(jwtToken, TokenType.JWT);
+        if (userEmail != null) {
+            var user = this.userRepository.findByEmail(userEmail)
+                    .orElseThrow();
+            if (jwtService.isTokenValid(jwtToken, TokenType.JWT, user)) {
+                revokeAllUserTokens(user);
+                SecurityContextHolder.clearContext();
+            }
+        }
+    }
+
+    private void saveUserToken(User user, String jwtToken, TokenType tokenType) {
         var token = Token.builder()
                 .user(user)
                 .token(jwtToken)
-                .tokenType(TokenType.JWT)
+                .tokenType(tokenType)
                 .build();
         tokenRepository.save(token);
     }
@@ -83,7 +101,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse refreshToken(HttpServletRequest request,
-                             HttpServletResponse response) throws IOException {
+                             HttpServletResponse response) {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         final String refreshToken;
         final String userEmail;
@@ -99,7 +117,7 @@ public class AuthenticationService {
                 var accessToken = jwtService.generateToken(user);
                 // Only allow one device to login
 //                revokeAllUserTokens(user);
-                saveUserToken(user, accessToken);
+                saveUserToken(user, accessToken, TokenType.JWT);
                 return AuthenticationResponse.builder()
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
