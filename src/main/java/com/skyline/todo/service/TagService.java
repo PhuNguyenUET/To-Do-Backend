@@ -1,6 +1,7 @@
 package com.skyline.todo.service;
 
 import com.skyline.todo.DTO.TagDTO;
+import com.skyline.todo.exceptions.tag.NoSuchTagException;
 import com.skyline.todo.model.dailyTask.DailyTask;
 import com.skyline.todo.model.scheduledTask.Tag;
 import com.skyline.todo.repository.DailyTaskRepository;
@@ -27,7 +28,7 @@ public class TagService {
     }
 
     public TagDTO update(TagDTO tag, int id) {
-        tagRepository.findById(id).orElseThrow();
+        tagRepository.findById(id).orElseThrow(() -> new NoSuchTagException(id));
 
         tag.setId(id);
         Tag t = this.modelMapper.map(tag, Tag.class);
@@ -35,7 +36,7 @@ public class TagService {
     }
 
     public void delete(int id) {
-        tagRepository.findById(id).orElseThrow();
+        tagRepository.findById(id).orElseThrow(() -> new NoSuchTagException(id));
         tagRepository.deleteById(id);
     }
 

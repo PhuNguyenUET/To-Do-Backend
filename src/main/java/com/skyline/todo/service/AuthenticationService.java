@@ -4,6 +4,7 @@ import com.skyline.todo.DTO.AuthenticationRequest;
 import com.skyline.todo.DTO.AuthenticationResponse;
 import com.skyline.todo.DTO.RegisterRequest;
 import com.skyline.todo.authConfig.JwtService;
+import com.skyline.todo.exceptions.user.NoSuchUserException;
 import com.skyline.todo.model.auth.*;
 import com.skyline.todo.model.user.Role;
 import com.skyline.todo.model.user.User;
@@ -51,7 +52,7 @@ public class AuthenticationService {
         );
 
         var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new NoSuchUserException(request.getEmail()));
         if(user.isBanned()) {
             return null;
         }
@@ -78,7 +79,7 @@ public class AuthenticationService {
         userEmail = jwtService.extractUsername(jwtToken, TokenType.JWT);
         if (userEmail != null) {
             var user = this.userRepository.findByEmail(userEmail)
-                    .orElseThrow();
+                    .orElseThrow(() -> new NoSuchUserException(userEmail));
             if (jwtService.isTokenValid(jwtToken, TokenType.JWT, user)) {
                 revokeAllUserTokens(user);
                 SecurityContextHolder.clearContext();
@@ -115,7 +116,7 @@ public class AuthenticationService {
         userEmail = jwtService.extractUsername(refreshToken, TokenType.REFRESH);
         if (userEmail != null) {
             var user = this.userRepository.findByEmail(userEmail)
-                    .orElseThrow();
+                    .orElseThrow(() -> new NoSuchUserException(userEmail));
             if (jwtService.isTokenValid(refreshToken, TokenType.REFRESH, user)) {
                 var accessToken = jwtService.generateToken(user);
                 // Only allow one device to login

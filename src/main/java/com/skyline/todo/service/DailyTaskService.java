@@ -1,6 +1,7 @@
 package com.skyline.todo.service;
 
 import com.skyline.todo.DTO.DailyTaskDTO;
+import com.skyline.todo.exceptions.dailyTask.NoSuchDailyTaskException;
 import com.skyline.todo.model.dailyTask.DailyTask;
 import com.skyline.todo.model.scheduledTask.Tag;
 import com.skyline.todo.modelMapper.ModelMapperConfig;
@@ -30,7 +31,7 @@ public class DailyTaskService {
     }
 
     public DailyTaskDTO update(DailyTaskDTO dailyTask, int id) {
-        dailyTaskRepository.findById(id).orElseThrow();
+        dailyTaskRepository.findById(id).orElseThrow(() -> new NoSuchDailyTaskException(id));
 
         dailyTask.setId(id);
         DailyTask task = this.modelMapper.map(dailyTask, DailyTask.class);
@@ -48,7 +49,7 @@ public class DailyTaskService {
     }
 
     public boolean toggleCompleted(int id) {
-        DailyTask dailyTask = dailyTaskRepository.findById(id).orElseThrow();
+        DailyTask dailyTask = dailyTaskRepository.findById(id).orElseThrow(() -> new NoSuchDailyTaskException(id));
         dailyTask.setFinished(!dailyTask.isFinished());
         dailyTaskRepository.save(dailyTask);
         return dailyTask.isFinished();
@@ -65,12 +66,12 @@ public class DailyTaskService {
     }
 
     public void delete(int id) {
-        dailyTaskRepository.findById(id).orElseThrow();
+        dailyTaskRepository.findById(id).orElseThrow(() -> new NoSuchDailyTaskException(id));
         dailyTaskRepository.deleteById(id);
     }
 
     public List<DailyTaskDTO> getAllDailyTasksByDateAndTag(LocalDate date, int tagId, Authentication authentication) {
-        Tag tag = tagRepository.findById(tagId).orElseThrow();
+        Tag tag = tagRepository.findById(tagId).orElseThrow(() -> new NoSuchDailyTaskException(tagId));
         String username = authentication.getName();
         List<DailyTask> dailyTasks = dailyTaskRepository.findByUserEmailAndSetDate(username, date);
         List<DailyTask> dailyTasksWithTag = new ArrayList<>();

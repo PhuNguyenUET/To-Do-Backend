@@ -1,12 +1,12 @@
 package com.skyline.todo.service;
 
+import com.skyline.todo.exceptions.category.NoSuchCategoryException;
 import com.skyline.todo.model.scheduledTask.Category;
 import com.skyline.todo.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,14 +18,14 @@ public class CategoryService {
     }
 
     public Category update(Category category, int id) {
-        categoryRepository.findById(id).orElseThrow();
+        categoryRepository.findById(id).orElseThrow(() -> new NoSuchCategoryException(id));
 
         category.setId(id);
         return categoryRepository.save(category);
     }
 
     public void delete(int id) {
-        categoryRepository.findById(id).orElseThrow();
+        categoryRepository.findById(id).orElseThrow(() -> new NoSuchCategoryException(id));
 
         categoryRepository.deleteById(id);
     }

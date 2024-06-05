@@ -1,6 +1,7 @@
 package com.skyline.todo.authConfig;
 
 import com.skyline.todo.auditing.ApplicationAuditAware;
+import com.skyline.todo.exceptions.user.NoSuchUserException;
 import com.skyline.todo.model.user.User;
 import com.skyline.todo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new NoSuchUserException(username));
     }
 
     @Bean

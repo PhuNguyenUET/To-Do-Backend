@@ -1,5 +1,6 @@
 package com.skyline.todo.service;
 
+import com.skyline.todo.exceptions.user.NoSuchUserException;
 import com.skyline.todo.model.user.Role;
 import com.skyline.todo.model.user.User;
 import com.skyline.todo.repository.TokenRepository;
@@ -15,14 +16,14 @@ public class AdminService {
 
     public void upgradeUser(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow();
+                .orElseThrow(() -> new NoSuchUserException(userEmail));
         user.setRole(Role.ADMIN);
         userRepository.save(user);
     }
 
     public void banUser(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow();
+                .orElseThrow(() -> new NoSuchUserException(userEmail));
         user.setBanned(true);
         revokeAllUserTokens(user);
         userRepository.save(user);
@@ -30,7 +31,7 @@ public class AdminService {
 
     public void unbanUser(String userEmail) {
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow();
+                .orElseThrow(() -> new NoSuchUserException(userEmail));
         user.setBanned(false);
         userRepository.save(user);
     }

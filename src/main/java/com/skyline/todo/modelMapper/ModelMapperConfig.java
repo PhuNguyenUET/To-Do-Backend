@@ -4,6 +4,8 @@ import com.skyline.todo.DTO.DailyTaskDTO;
 import com.skyline.todo.DTO.SampleScheduledTaskDTO;
 import com.skyline.todo.DTO.ScheduledTaskDTO;
 import com.skyline.todo.DTO.TagDTO;
+import com.skyline.todo.exceptions.category.NoSuchCategoryException;
+import com.skyline.todo.exceptions.tag.NoSuchTagException;
 import com.skyline.todo.model.dailyTask.DailyTask;
 import com.skyline.todo.model.scheduledTask.Category;
 import com.skyline.todo.model.scheduledTask.ScheduledTask;
@@ -54,7 +56,7 @@ public class ModelMapperConfig {
                         .tags(dailyTaskDTO
                                 .getTags()
                                 .stream()
-                                .map(id -> tagRepository.findById(id).orElseThrow())
+                                .map(id -> tagRepository.findById(id).orElseThrow(() -> new NoSuchTagException(id)))
                                 .toList())
                         .isFinished(dailyTaskDTO.isFinished())
                         .build();
@@ -89,7 +91,7 @@ public class ModelMapperConfig {
                         .tags(scheduledTaskDTO
                                 .getTags()
                                 .stream()
-                                .map(id -> tagRepository.findById(id).orElseThrow())
+                                .map(id -> tagRepository.findById(id).orElseThrow(() -> new NoSuchTagException(id)))
                                 .toList())
                         .build();
             }
@@ -108,12 +110,12 @@ public class ModelMapperConfig {
                         .tags(sampleScheduledTaskDTO
                                 .getTags()
                                 .stream()
-                                .map(id -> tagRepository.findById(id).orElseThrow())
+                                .map(id -> tagRepository.findById(id).orElseThrow(() -> new NoSuchTagException(id)))
                                 .toList())
                         .categories(sampleScheduledTaskDTO
                                 .getCategories()
                                 .stream()
-                                .map(id -> categoryRepository.findById(id).orElseThrow())
+                                .map(id -> categoryRepository.findById(id).orElseThrow(() -> new NoSuchCategoryException(id)))
                                 .toList())
                         .build();
             }

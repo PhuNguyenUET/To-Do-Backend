@@ -3,6 +3,7 @@ package com.skyline.todo.service;
 import com.skyline.todo.DTO.DailyTaskDTO;
 import com.skyline.todo.DTO.SampleScheduledTaskDTO;
 import com.skyline.todo.DTO.ScheduledTaskDTO;
+import com.skyline.todo.exceptions.scheduledTask.NoSuchScheduledTaskException;
 import com.skyline.todo.model.scheduledTask.ScheduledTask;
 import com.skyline.todo.repository.ScheduledTaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class ScheduledTaskService {
     }
 
     public ScheduledTaskDTO update(ScheduledTaskDTO scheduledTask, int id) {
-        scheduledTaskRepository.findById(id).orElseThrow();
+        scheduledTaskRepository.findById(id).orElseThrow(() -> new NoSuchScheduledTaskException(id));
 
         scheduledTask.setId(id);
         ScheduledTask task = this.modelMapper.map(scheduledTask, ScheduledTask.class);
@@ -39,7 +40,7 @@ public class ScheduledTaskService {
     }
 
     public SampleScheduledTaskDTO updateSample(SampleScheduledTaskDTO scheduledTask, int id) {
-        scheduledTaskRepository.findById(id).orElseThrow();
+        scheduledTaskRepository.findById(id).orElseThrow(() -> new NoSuchScheduledTaskException(id));
 
         scheduledTask.setId(id);
         ScheduledTask task = this.modelMapper.map(scheduledTask, ScheduledTask.class);
@@ -57,7 +58,7 @@ public class ScheduledTaskService {
     }
 
     public void delete(int id) {
-        scheduledTaskRepository.findById(id).orElseThrow();
+        scheduledTaskRepository.findById(id).orElseThrow(() -> new NoSuchScheduledTaskException(id));
         scheduledTaskRepository.deleteById(id);
     }
 }
