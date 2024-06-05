@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/to_do
-    username: root
-    password: 102938
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:postgresql://dpg-cpg998ect0pc73d9rcn0-a.singapore-postgres.render.com/to_do_0iac
+    username: to_do_0iac
+    password: HwWjCabh6N2ht3VCq2HdY8OBCzENnvF9
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
@@ -11,7 +11,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    database: mysql
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 application:
   security:
