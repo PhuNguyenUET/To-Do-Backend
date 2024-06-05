@@ -1,16 +1,13 @@
-package com.skyline.todo.model.sampleTask;
+package com.skyline.todo.model.scheduledTask;
 
+import com.skyline.todo.model.dailyTask.DailyTask;
 import com.skyline.todo.model.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder
@@ -18,19 +15,12 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class SampleTask {
+public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
-    private Integer iconId;
-
     private String name;
-
-    @Enumerated(EnumType.STRING)
-    private RepeatMode repeatMode;
-
-    private List<String> repeatTime;
 
     @ManyToOne
     @CreatedBy
@@ -40,10 +30,4 @@ public class SampleTask {
             updatable = false
     )
     private User user;
-
-    @ManyToMany(mappedBy = "sampleTasks")
-    private List<Tag> tags;
-
-    @ManyToMany(mappedBy = "tasks")
-    private List<Category> categories;
 }

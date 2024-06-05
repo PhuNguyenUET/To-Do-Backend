@@ -1,4 +1,4 @@
-package com.skyline.todo.model.sampleTask;
+package com.skyline.todo.model.scheduledTask;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

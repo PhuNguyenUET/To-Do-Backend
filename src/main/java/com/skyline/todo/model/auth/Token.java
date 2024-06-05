@@ -2,10 +2,7 @@ package com.skyline.todo.model.auth;
 
 import com.skyline.todo.model.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder

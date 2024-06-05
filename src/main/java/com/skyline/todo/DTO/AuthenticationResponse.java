@@ -1,4 +1,4 @@
-package com.skyline.todo.model.auth;
+package com.skyline.todo.DTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

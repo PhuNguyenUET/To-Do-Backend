@@ -1,7 +1,6 @@
 package com.skyline.todo.controller;
 
-import com.skyline.todo.model.sampleTask.Category;
-import com.skyline.todo.model.user.Role;
+import com.skyline.todo.model.scheduledTask.Category;
 import com.skyline.todo.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +14,10 @@ import java.util.List;
 @RequestMapping("/category")
 @RequiredArgsConstructor
 public class CategoryController {
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @GetMapping("/getAll")
-    ResponseEntity<List<Category>> getAllCategory() {
+    public ResponseEntity<List<Category>> getAllCategory() {
         List<Category> categories = categoryService.getAllCategories();
 
         return ResponseEntity.ok(categories);
@@ -26,7 +25,7 @@ public class CategoryController {
 
     @PostMapping("/add")
     @Secured("ROLE_ADMIN")
-    ResponseEntity<Category> addCategory(@RequestBody @Valid Category category) {
+    public ResponseEntity<Category> addCategory(@RequestBody @Valid Category category) {
         Category cate = categoryService.post(category);
 
         return ResponseEntity.ok(cate);
@@ -34,7 +33,7 @@ public class CategoryController {
 
     @PutMapping("/update")
     @Secured("ROLE_ADMIN")
-    ResponseEntity<Category> updateCategory(@RequestBody @Valid Category category, @RequestParam("id") int cateId) {
+    public ResponseEntity<Category> updateCategory(@RequestBody @Valid Category category, @RequestParam("id") int cateId) {
         Category cate = categoryService.update(category, cateId);
 
         return ResponseEntity.ok(cate);
@@ -42,9 +41,9 @@ public class CategoryController {
 
     @DeleteMapping("/delete")
     @Secured("ROLE_ADIN")
-    ResponseEntity<String> deleteCategory(@RequestParam("id") int cateId) {
+    public ResponseEntity<?> deleteCategory(@RequestParam("id") int cateId) {
         categoryService.delete(cateId);
 
-        return ResponseEntity.ok("Category deleted successfully");
+        return ResponseEntity.ok().build();
     }
 }

@@ -1,5 +1,8 @@
 package com.skyline.todo.service;
 
+import com.skyline.todo.DTO.AuthenticationRequest;
+import com.skyline.todo.DTO.AuthenticationResponse;
+import com.skyline.todo.DTO.RegisterRequest;
 import com.skyline.todo.authConfig.JwtService;
 import com.skyline.todo.model.auth.*;
 import com.skyline.todo.model.user.Role;

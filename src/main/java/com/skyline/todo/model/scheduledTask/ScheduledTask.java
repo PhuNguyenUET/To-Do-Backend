@@ -1,12 +1,8 @@
-package com.skyline.todo.model.sampleTask;
+package com.skyline.todo.model.scheduledTask;
 
-import com.skyline.todo.model.dailyTask.DailyTask;
 import com.skyline.todo.model.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -18,12 +14,19 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Tag {
+public class ScheduledTask {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    private Integer iconId;
+
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    private RepeatMode repeatMode;
+
+    private List<String> repeatTime;
 
     @ManyToOne
     @CreatedBy
@@ -36,17 +39,12 @@ public class Tag {
 
     @ManyToMany
     @JoinTable(
-            name = "sample_task_tag",
-            joinColumns = @JoinColumn(name = "tag_id"),
-            inverseJoinColumns = @JoinColumn(name = "sample_task_id")
+            name = "scheduled_task_tag",
+            joinColumns = @JoinColumn(name = "scheduled_task_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    List<SampleTask> sampleTasks;
+    private List<Tag> tags;
 
-    @ManyToMany
-    @JoinTable(
-            name = "daily_task_tag",
-            joinColumns = @JoinColumn(name = "tag_id"),
-            inverseJoinColumns = @JoinColumn(name = "daily_task_id")
-    )
-    List<DailyTask> dailyTasks;
+    @ManyToMany(mappedBy = "tasks", cascade = CascadeType.ALL)
+    private List<Category> categories;
 }

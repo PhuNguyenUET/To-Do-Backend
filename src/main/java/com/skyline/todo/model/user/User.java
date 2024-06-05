@@ -3,6 +3,7 @@ package com.skyline.todo.model.user;
 import com.skyline.todo.model.auth.Token;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -32,6 +33,7 @@ public class User implements UserDetails {
     private boolean isBanned = false;
 
     @Enumerated(EnumType.STRING)
+    @Value("USER")
     private Role role = Role.USER;
 
     @OneToMany(mappedBy = "user")

@@ -1,6 +1,7 @@
 package com.skyline.todo.controller;
 
-import com.skyline.todo.model.sampleTask.Tag;
+import com.skyline.todo.DTO.TagDTO;
+import com.skyline.todo.model.scheduledTask.Tag;
 import com.skyline.todo.service.TagService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,39 +20,46 @@ public class TagController {
     private final TagService tagService;
 
     @PostMapping("/add")
-    public ResponseEntity<Tag> addNewTag(@RequestBody @Valid Tag tag) {
-        Tag t = tagService.post(tag);
+    public ResponseEntity<TagDTO> addNewTag(@RequestBody @Valid TagDTO tag) {
+        TagDTO t = tagService.post(tag);
 
         return ResponseEntity.ok(t);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<Tag> updateTag(@RequestBody @Valid Tag tag, @RequestParam("id") int tagId) {
-        Tag t = tagService.update(tag, tagId);
+    public ResponseEntity<TagDTO> updateTag(@RequestBody @Valid TagDTO tag, @RequestParam("id") int tagId) {
+        TagDTO t = tagService.update(tag, tagId);
 
         return ResponseEntity.ok(t);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteTag(@RequestParam("id") int tagId) {
+    public ResponseEntity<?> deleteTag(@RequestParam("id") int tagId) {
         tagService.delete(tagId);
 
-        return ResponseEntity.ok("Tag deleted successfully");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<Tag>> getAllTag(Authentication authentication) {
-        List<Tag> tags = tagService.getAllTag(authentication);
+    public ResponseEntity<List<TagDTO>> getAllTag(Authentication authentication) {
+        List<TagDTO> tags = tagService.getAllTag(authentication);
+
+        return ResponseEntity.ok(tags);
+    }
+
+    @GetMapping("/getDisplay")
+    public ResponseEntity<List<TagDTO>> getDisplayTag(Authentication authentication) {
+        List<TagDTO> tags = tagService.getDisplayTag(authentication);
 
         return ResponseEntity.ok(tags);
     }
 
     @GetMapping("/getAllByDate")
-    public ResponseEntity<List<Tag>> getAllTagByDate(
+    public ResponseEntity<List<TagDTO>> getAllTagByDate(
             @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             Authentication authentication
     ) {
-        List<Tag> tags = tagService.getAllTagInDay(authentication, date);
+        List<TagDTO> tags = tagService.getAllTagInDay(authentication, date);
 
         return ResponseEntity.ok(tags);
     }

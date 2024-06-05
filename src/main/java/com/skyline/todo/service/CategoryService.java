@@ -1,6 +1,6 @@
 package com.skyline.todo.service;
 
-import com.skyline.todo.model.sampleTask.Category;
+import com.skyline.todo.model.scheduledTask.Category;
 import com.skyline.todo.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,22 +18,14 @@ public class CategoryService {
     }
 
     public Category update(Category category, int id) {
-        Optional<Category> categoryOptional = categoryRepository.findById(id);
-
-        if(categoryOptional.isEmpty()) {
-            //TODO: Throw custom exception
-        }
+        categoryRepository.findById(id).orElseThrow();
 
         category.setId(id);
         return categoryRepository.save(category);
     }
 
     public void delete(int id) {
-        Optional<Category> categoryOptional = categoryRepository.findById(id);
-
-        if(categoryOptional.isEmpty()) {
-            //TODO: Throw custom exception
-        }
+        categoryRepository.findById(id).orElseThrow();
 
         categoryRepository.deleteById(id);
     }

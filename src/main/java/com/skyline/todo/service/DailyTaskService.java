@@ -1,14 +1,18 @@
 package com.skyline.todo.service;
 
+import com.skyline.todo.DTO.DailyTaskDTO;
 import com.skyline.todo.model.dailyTask.DailyTask;
-import com.skyline.todo.model.sampleTask.Tag;
+import com.skyline.todo.model.scheduledTask.Tag;
+import com.skyline.todo.modelMapper.ModelMapperConfig;
 import com.skyline.todo.repository.DailyTaskRepository;
 import com.skyline.todo.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,63 +22,66 @@ public class DailyTaskService {
     private final DailyTaskRepository dailyTaskRepository;
     private final TagRepository tagRepository;
 
-    public DailyTask add(DailyTask dailyTask) {
-        return dailyTaskRepository.save(dailyTask);
+    private final ModelMapper modelMapper;
+
+    public DailyTaskDTO add(DailyTaskDTO dailyTask) {
+        DailyTask task = this.modelMapper.map(dailyTask, DailyTask.class);
+        return this.modelMapper.map(dailyTaskRepository.save(task), DailyTaskDTO.class);
     }
 
-    public DailyTask update(DailyTask dailyTask, int id) {
-        Optional<DailyTask> daily = dailyTaskRepository.findById(id);
-        if(daily.isEmpty()) {
-            //TODO: Throw custom exception
-        }
+    public DailyTaskDTO update(DailyTaskDTO dailyTask, int id) {
+        dailyTaskRepository.findById(id).orElseThrow();
+
         dailyTask.setId(id);
-        return dailyTaskRepository.save(dailyTask);
+        DailyTask task = this.modelMapper.map(dailyTask, DailyTask.class);
+        return this.modelMapper.map(dailyTaskRepository.save(task), DailyTaskDTO.class);
     }
 
-    public List<DailyTask> getAllDailyTasksByDate(LocalDate date, Authentication authentication) {
+    public List<DailyTaskDTO> getAllDailyTasksByDate(LocalDate date, Authentication authentication) {
         String username = authentication.getName();
 
-        return dailyTaskRepository.findByUserEmailAndSetDate(username, date);
+        return dailyTaskRepository
+                .findByUserEmailAndSetDate(username, date)
+                .stream()
+                .map(dailyTask -> this.modelMapper.map(dailyTask, DailyTaskDTO.class))
+                .toList();
     }
 
     public boolean toggleCompleted(int id) {
-        Optional<DailyTask> daily = dailyTaskRepository.findById(id);
-        if(daily.isEmpty()) {
-            //TODO: Throw custom exception
-        }
-
-        DailyTask dailyTask = daily.get();
+        DailyTask dailyTask = dailyTaskRepository.findById(id).orElseThrow();
         dailyTask.setFinished(!dailyTask.isFinished());
         dailyTaskRepository.save(dailyTask);
         return dailyTask.isFinished();
     }
 
     public void markAllCompletedByDate(LocalDate date, Authentication authentication) {
-        List<DailyTask> dailyTasks = getAllDailyTasksByDate(date, authentication);
+        String username = authentication.getName();
+        List<DailyTask> dailyTasks = dailyTaskRepository.findByUserEmailAndSetDate(username, date);
 
-        for(DailyTask dailyTask : dailyTasks) {
+        for (DailyTask dailyTask : dailyTasks) {
             dailyTask.setFinished(true);
             dailyTaskRepository.save(dailyTask);
         }
     }
 
     public void delete(int id) {
-        Optional<DailyTask> daily = dailyTaskRepository.findById(id);
-        if(daily.isEmpty()) {
-            //TODO: Throw custom exception
-        }
+        dailyTaskRepository.findById(id).orElseThrow();
         dailyTaskRepository.deleteById(id);
     }
 
-    public List<DailyTask> getAllDailyTasksByDateAndTag(LocalDate date, int tagId, Authentication authentication) {
-        Optional<Tag> tagOptional = tagRepository.findById(tagId);
-        if(tagOptional.isEmpty()) {
-            //TODO: Throw custom exception
+    public List<DailyTaskDTO> getAllDailyTasksByDateAndTag(LocalDate date, int tagId, Authentication authentication) {
+        Tag tag = tagRepository.findById(tagId).orElseThrow();
+        String username = authentication.getName();
+        List<DailyTask> dailyTasks = dailyTaskRepository.findByUserEmailAndSetDate(username, date);
+        List<DailyTask> dailyTasksWithTag = new ArrayList<>();
+        for(DailyTask dailyTask : dailyTasks) {
+            if(dailyTask.getTags().contains(tag)) {
+                dailyTasksWithTag.add(dailyTask);
+            }
         }
-        Tag tag = tagOptional.get();
-        List<DailyTask> dailyTasks = getAllDailyTasksByDate(date, authentication);
-        List<DailyTask> tasksInTag = tag.getDailyTasks();
-        dailyTasks.retainAll(tasksInTag);
-        return dailyTasks;
+        return dailyTasksWithTag
+                .stream()
+                .map(dailyTask -> this.modelMapper.map(dailyTask, DailyTaskDTO.class))
+                .toList();
     }
 }

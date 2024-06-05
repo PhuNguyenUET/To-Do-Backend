@@ -1,5 +1,6 @@
 package com.skyline.todo.controller;
 
+import com.skyline.todo.DTO.DailyTaskDTO;
 import com.skyline.todo.model.dailyTask.DailyTask;
 import com.skyline.todo.service.DailyTaskService;
 import jakarta.validation.Valid;
@@ -19,52 +20,52 @@ public class DailyTaskController {
     private final DailyTaskService dailyTaskService;
 
     @PostMapping("/add")
-    public ResponseEntity<DailyTask> addDailyTask(@RequestBody @Valid DailyTask dailyTask) {
-        DailyTask task = dailyTaskService.add(dailyTask);
+    public ResponseEntity<DailyTaskDTO> addDailyTask(@RequestBody @Valid DailyTaskDTO dailyTask) {
+        DailyTaskDTO task = dailyTaskService.add(dailyTask);
         return ResponseEntity.ok(task);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<DailyTask> updateDailyTask(@RequestBody @Valid DailyTask dailyTask, @RequestParam("id") int taskId) {
-        DailyTask task = dailyTaskService.update(dailyTask, taskId);
+    public ResponseEntity<DailyTaskDTO> updateDailyTask(@RequestBody @Valid DailyTaskDTO dailyTask, @RequestParam("id") int taskId) {
+        DailyTaskDTO task = dailyTaskService.update(dailyTask, taskId);
         return ResponseEntity.ok(task);
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteDailyTask(@RequestParam("id") int taskId) {
+    public ResponseEntity<?> deleteDailyTask(@RequestParam("id") int taskId) {
         dailyTaskService.delete(taskId);
-        return ResponseEntity.ok("Daily task deleted successfully");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<DailyTask>> getAllDailTaskByDate(
+    public ResponseEntity<List<DailyTaskDTO>> getAllDailTaskByDate(
             @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             Authentication authentication) {
-        List<DailyTask> dailyTasks = dailyTaskService.getAllDailyTasksByDate(date, authentication);
+        List<DailyTaskDTO> dailyTasks = dailyTaskService.getAllDailyTasksByDate(date, authentication);
         return ResponseEntity.ok(dailyTasks);
     }
 
-    @GetMapping("/toggleCompleted")
+    @PostMapping("/toggleCompleted")
     public ResponseEntity<Boolean> toggleCompleted(@RequestParam("id") int taskId) {
         boolean completedState = dailyTaskService.toggleCompleted(taskId);
         return ResponseEntity.ok(completedState);
     }
 
-    @GetMapping("/markAllCompleted")
-    public ResponseEntity<String> markAllCompletedByDate(
+    @PostMapping("/markAllCompleted")
+    public ResponseEntity<?> markAllCompletedByDate(
             @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             Authentication authentication) {
         dailyTaskService.markAllCompletedByDate(date, authentication);
-        return ResponseEntity.ok("Operation completed");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/getAllByTag")
-    public ResponseEntity<List<DailyTask>> getAllDailyTaskByDateAndTag(
+    public ResponseEntity<List<DailyTaskDTO>> getAllDailyTaskByDateAndTag(
             @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
             @RequestParam("tagId") int tagId,
             Authentication authentication
             ) {
-        List<DailyTask> dailyTasks = dailyTaskService.getAllDailyTasksByDateAndTag(date, tagId, authentication);
+        List<DailyTaskDTO> dailyTasks = dailyTaskService.getAllDailyTasksByDateAndTag(date, tagId, authentication);
         return ResponseEntity.ok(dailyTasks);
     }
 }

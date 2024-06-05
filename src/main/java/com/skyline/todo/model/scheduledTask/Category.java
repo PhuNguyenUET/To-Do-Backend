@@ -1,13 +1,9 @@
-package com.skyline.todo.model.sampleTask;
+package com.skyline.todo.model.scheduledTask;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Builder
@@ -27,5 +23,5 @@ public class Category {
             joinColumns = @JoinColumn(name = "category_id"),
             inverseJoinColumns = @JoinColumn(name = "task_id")
     )
-    List<SampleTask> tasks;
+    List<ScheduledTask> tasks;
 }

@@ -1,6 +1,6 @@
 package com.skyline.todo.repository;
 
-import com.skyline.todo.model.sampleTask.Tag;
+import com.skyline.todo.model.scheduledTask.Tag;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;

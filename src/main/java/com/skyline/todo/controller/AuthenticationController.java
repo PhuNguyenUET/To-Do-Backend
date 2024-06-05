@@ -1,8 +1,8 @@
 package com.skyline.todo.controller;
 
-import com.skyline.todo.model.auth.AuthenticationRequest;
-import com.skyline.todo.model.auth.AuthenticationResponse;
-import com.skyline.todo.model.auth.RegisterRequest;
+import com.skyline.todo.DTO.AuthenticationRequest;
+import com.skyline.todo.DTO.AuthenticationResponse;
+import com.skyline.todo.DTO.RegisterRequest;
 import com.skyline.todo.service.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
