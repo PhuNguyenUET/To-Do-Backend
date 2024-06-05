@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://dpg-cpg998ect0pc73d9rcn0-a.singapore-postgres.render.com/to_do_0iac
-    username: to_do_0iac
+    username: to_do_0iac_user
     password: HwWjCabh6N2ht3VCq2HdY8OBCzENnvF9
     driver-class-name: org.postgresql.Driver
   jpa:

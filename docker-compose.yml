@@ -15,8 +15,8 @@ services:
     restart: unless-stopped
 
   pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
+    container_name: to-do-pgadmin
+    image: dpage/pgadmin-to-do
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
