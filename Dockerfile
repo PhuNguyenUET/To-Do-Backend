@@ -5,6 +5,6 @@ RUN mvn clean package -DskipTests
 
 FROM openjdk:17.0.1-jdk-slim
 MAINTAINER phunguyen
-COPY --from=build /target/Daily-Reflect-Backend-0.0.1-SNAPSHOT.jar Daily-Reflect-Backend.jar
+COPY --from=build /target/To-Do-Backend-0.0.1-SNAPSHOT.jar To-Do-Backend.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","Daily-Reflect-Backend.jar"]
+ENTRYPOINT ["java","-jar","To-Do-Backend.jar"]
